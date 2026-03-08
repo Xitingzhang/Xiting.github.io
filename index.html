@@ -158,7 +158,7 @@
             background-color: #f8f9fa;
         }
 
-        /* 响应式设计 */
+        /* 手机端自适应样式 */
         @media (max-width: 768px) {
             h1 {
                 font-size: 2rem;
@@ -174,10 +174,60 @@
                 margin-right: 0;
             }
             
-            table th,
+            /* 手机端表格优化 - 重点修改部分 */
+            table {
+                border: 0;
+            }
+            
+            table thead {
+                display: none;
+            }
+            
+            table tr {
+                display: block;
+                margin-bottom: 15px;
+                border: 1px solid #ddd;
+                border-radius: 8px;
+                overflow: hidden;
+            }
+            
             table td {
-                padding: 8px;
-                font-size: 0.9rem;
+                display: block;
+                text-align: right;
+                padding-left: 50%;
+                position: relative;
+                border-bottom: 1px solid #f5f5f5;
+            }
+            
+            table td:last-child {
+                border-bottom: none;
+            }
+            
+            table td::before {
+                content: attr(data-label);
+                position: absolute;
+                left: 0;
+                width: 50%;
+                padding-left: 15px;
+                font-weight: 600;
+                text-align: left;
+                color: #3498db;
+            }
+            
+            /* 操作按钮在手机端横向排列 */
+            table td:last-child {
+                display: flex;
+                padding: 10px;
+                justify-content: space-around;
+            }
+            
+            table td:last-child::before {
+                display: none;
+            }
+            
+            table td .btn {
+                width: 48%;
+                margin: 0;
             }
         }
     </style>
@@ -247,7 +297,7 @@
     </div>
 
     <script>
-        // 初始化产品数据 - 这里可以添加默认产品
+        // 1. 预设默认产品数据（功能恢复）
         let products = [
             {
                 id: Date.now() - 3,
@@ -278,16 +328,14 @@
             }
         ];
 
-        // 页面加载完成后渲染产品列表
+        // 2. 页面加载初始化（功能恢复）
         document.addEventListener('DOMContentLoaded', () => {
             renderProducts();
-            // 监听表单提交事件
             document.getElementById('productForm').addEventListener('submit', handleFormSubmit);
-            // 监听搜索框输入事件
             document.getElementById('searchInput').addEventListener('input', handleSearch);
         });
 
-        // 渲染产品列表
+        // 3. 渲染产品列表（新增手机端自适应标签）
         function renderProducts(filteredProducts = products) {
             const tableBody = document.getElementById('productTableBody');
             tableBody.innerHTML = '';
@@ -295,13 +343,13 @@
             filteredProducts.forEach(product => {
                 const row = document.createElement('tr');
                 row.innerHTML = `
-                    <td>${product.name}</td>
-                    <td>${product.model}</td>
-                    <td>¥${product.price.toFixed(2)}</td>
-                    <td>${product.material}</td>
-                    <td>${product.specs}</td>
-                    <td>${product.notes || '-'}</td>
-                    <td>
+                    <td data-label="产品名称">${product.name}</td>
+                    <td data-label="产品型号">${product.model}</td>
+                    <td data-label="产品价格">¥${product.price.toFixed(2)}</td>
+                    <td data-label="产品材质">${product.material}</td>
+                    <td data-label="产品规格">${product.specs}</td>
+                    <td data-label="产品备注">${product.notes || '-'}</td>
+                    <td data-label="操作">
                         <button class="btn btn-edit" onclick="editProduct(${product.id})">编辑</button>
                         <button class="btn btn-danger" onclick="deleteProduct(${product.id})">删除</button>
                     </td>
@@ -310,11 +358,10 @@
             });
         }
 
-        // 处理表单提交
+        // 4. 保存产品功能（完全恢复）
         function handleFormSubmit(e) {
             e.preventDefault();
             
-            // 获取表单数据
             const productData = {
                 id: Date.now(),
                 name: document.getElementById('productName').value,
@@ -325,30 +372,21 @@
                 notes: document.getElementById('productNotes').value
             };
             
-            // 添加产品到数组
             products.push(productData);
-            
-            // 重新渲染产品列表
             renderProducts();
-            
-            // 清空表单
             clearForm();
-            
-            // 提示成功
             alert('产品添加成功！');
         }
 
-        // 清空表单
+        // 5. 辅助功能（完全恢复）
         function clearForm() {
             document.getElementById('productForm').reset();
         }
 
-        // 编辑产品
         function editProduct(id) {
             const product = products.find(p => p.id === id);
             if (!product) return;
             
-            // 填充表单
             document.getElementById('productName').value = product.name;
             document.getElementById('productModel').value = product.model;
             document.getElementById('productPrice').value = product.price;
@@ -356,14 +394,10 @@
             document.getElementById('productSpecs').value = product.specs;
             document.getElementById('productNotes').value = product.notes;
             
-            // 删除原产品
             products = products.filter(p => p.id !== id);
-            
-            // 滚动到表单顶部
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
-        // 删除产品
         function deleteProduct(id) {
             if (confirm('确定要删除这个产品吗？')) {
                 products = products.filter(p => p.id !== id);
@@ -372,7 +406,6 @@
             }
         }
 
-        // 搜索产品
         function handleSearch() {
             const searchTerm = document.getElementById('searchInput').value.toLowerCase();
             const filteredProducts = products.filter(product => 
