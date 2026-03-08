@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <!-- 微信H5核心适配 -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <title>产品信息管理工具</title>
+    <style>
+        /* 全局样式重置 */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: "PingFang SC", "Microsoft YaHei", sans-serif;
+        }
+
+        body {
+            background-color: #f5f5f5;
+            padding: 20px;
+        }
+
+        /* 容器样式 */
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 12px;
+            padding: 24px;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.1);
+        }
+
+        /* 标题样式 */
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 30px;
+            font-size: 22px;
+        }
+
+        /* 表单样式 */
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #555;
+            font-weight: 500;
+        }
+
+        .form-group input,
+        .form-group textarea {
+            width: 100%;
+            padding: 12px 16px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+            font-family: inherit;
+        }
+
+        .form-group textarea {
+            min-height: 100px;
+            resize: vertical;
+            line-height: 1.5;
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #07c160; /* 微信绿色主题 */
+        }
+
+        /* 按钮样式 */
+        .btn-group {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 30px;
+        }
+
+        button {
+            flex: 1;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .btn-primary {
+            background-color: #07c160;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background-color: #06ad56;
+        }
+
+        .btn-secondary {
+            background-color: #f0f0f0;
+            color: #333;
+        }
+
+        .btn-secondary:hover {
+            background-color: #e0e0e0;
+        }
+
+        .btn-delete {
+            background-color: #ff4d4f;
+            color: white;
+        }
+
+        .btn-delete:hover {
+            background-color: #ff7875;
+        }
+
+        /* 搜索框样式 */
+        .search-box {
+            margin-bottom: 24px;
+        }
+
+        /* 列表样式 */
+        .product-list {
+            border-top: 1px solid #eee;
+            padding-top: 20px;
+        }
+
+        .product-item {
+            padding: 16px;
+            border: 1px solid #eee;
+            border-radius: 8px;
+            margin-bottom: 12px;
+            background-color: #fafafa;
+        }
+
+        .product-item h3 {
+            color: #333;
+            margin-bottom: 8px;
+            font-size: 18px;
+        }
+
+        .product-info {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+            margin-bottom: 12px;
+            font-size: 14px;
+            color: #666;
+        }
+
+        .product-note {
+            margin-bottom: 12px;
+            padding: 10px;
+            background-color: #f0f8ff;
+            border-radius: 6px;
+            font-size: 14px;
+            color: #333;
+            line-height: 1.5;
+        }
+
+        .product-note strong {
+            color: #07c160;
+        }
+
+        .product-actions {
+            display: flex;
+            gap: 8px;
+            justify-content: flex-end;
+        }
+
+        .product-actions button {
+            padding: 6px 12px;
+            font-size: 14px;
+        }
+
+        /* 空状态提示 */
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+            color: #999;
+            font-size: 16px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>产品信息管理工具</h1>
+
+        <!-- 产品表单 -->
+        <div class="form-group">
+            <label for="productName">产品名称</label>
+            <input type="text" id="productName" placeholder="请输入产品名称">
+        </div>
+
+        <div class="form-group">
+            <label for="model">型号</label>
+            <input type="text" id="model" placeholder="请输入型号">
+        </div>
+
+        <div class="form-group">
+            <label for="price">价格</label>
+            <input type="number" id="price" placeholder="请输入价格" min="0" step="0.01">
+        </div>
+
+        <div class="form-group">
+            <label for="material">材质</label>
+            <input type="text" id="material" placeholder="请输入材质">
+        </div>
+
+        <div class="form-group">
+            <label for="spec">规格</label>
+            <input type="text" id="spec" placeholder="请输入规格">
+        </div>
+
+        <!-- 新增：产品备注输入框 -->
+        <div class="form-group">
+            <label for="note">产品备注</label>
+            <textarea id="note" placeholder="请输入产品备注（如采购渠道、使用注意事项等）"></textarea>
+        </div>
+
+        <div class="btn-group">
+            <button class="btn-primary" id="saveBtn" onclick="saveProduct()">保存产品</button>
+            <button class="btn-secondary" onclick="clearForm()">清空表单</button>
+        </div>
+
+        <!-- 搜索框 -->
+        <div class="form-group search-box">
+            <label for="searchInput">搜索产品</label>
+            <input type="text" id="searchInput" placeholder="输入名称/型号搜索" oninput="searchProducts()">
+        </div>
+
+        <!-- 产品列表 -->
+        <div class="product-list" id="productList">
+            <div class="empty-state">暂无产品信息，请添加第一个产品吧！</div>
+        </div>
+    </div>
+
+    <script>
+        // 全局变量：当前编辑的产品ID
+        let currentEditId = null;
+
+        // 初始化页面
+        document.addEventListener('DOMContentLoaded', function() {
+            renderProductList();
+        });
+
+        // 1. 保存产品信息（新增备注字段处理）
+        function saveProduct() {
+            // 获取表单值
+            const productName = document.getElementById('productName').value.trim();
+            const model = document.getElementById('model').value.trim();
+            const price = document.getElementById('price').value.trim();
+            const material = document.getElementById('material').value.trim();
+            const spec = document.getElementById('spec').value.trim();
+            const note = document.getElementById('note').value.trim(); // 新增：获取备注内容
+
+            // 表单验证（备注为可选字段）
+            if (!productName || !model || !price) {
+                alert('产品名称、型号、价格为必填项！');
+                return;
+            }
+
+            // 产品数据对象（新增note字段）
+            const product = {
+                id: currentEditId || Date.now().toString(), // 用时间戳作为唯一ID
+                productName,
+                model,
+                price: parseFloat(price),
+                material,
+                spec,
+                note // 新增：保存备注
+            };
+
+            // 从本地存储获取现有数据
+            let products = JSON.parse(localStorage.getItem('products')) || [];
+
+            if (currentEditId) {
+                // 编辑模式：更新现有产品
+                const index = products.findIndex(item => item.id === currentEditId);
+                if (index !== -1) {
+                    products[index] = product;
+                }
+                currentEditId = null;
+                document.getElementById('saveBtn').textContent = '保存产品';
+                alert('产品信息更新成功！');
+            } else {
+                // 新增模式：添加新产品
+                products.push(product);
+                alert('产品信息保存成功！');
+            }
+
+            // 保存到本地存储
+            localStorage.setItem('products', JSON.stringify(products));
+
+            // 清空表单并刷新列表
+            clearForm();
+            renderProductList();
+        }
+
+        // 2. 清空表单（新增清空备注）
+        function clearForm() {
+            document.getElementById('productName').value = '';
+            document.getElementById('model').value = '';
+            document.getElementById('price').value = '';
+            document.getElementById('material').value = '';
+            document.getElementById('spec').value = '';
+            document.getElementById('note').value = ''; // 新增：清空备注
+            currentEditId = null;
+            document.getElementById('saveBtn').textContent = '保存产品';
+        }
+
+        // 3. 渲染产品列表（新增显示备注）
+        function renderProductList(products = null) {
+            const productList = document.getElementById('productList');
+            // 如果没有传入过滤后的产品，就从本地存储获取全部
+            const data = products || JSON.parse(localStorage.getItem('products')) || [];
+
+            if (data.length === 0) {
+                productList.innerHTML = '<div class="empty-state">暂无产品信息，请添加第一个产品吧！</div>';
+                return;
+            }
+
+            // 生成列表HTML（新增备注显示）
+            let html = '';
+            data.forEach(product => {
+                // 备注显示逻辑：有备注则显示，无备注则隐藏
+                const noteHtml = product.note ? `
+                    <div class="product-note">
+                        <strong>备注：</strong>${product.note}
+                    </div>
+                ` : '';
+
+                html += `
+                    <div class="product-item">
+                        <h3>${product.productName}</h3>
+                        <div class="product-info">
+                            <div><strong>型号：</strong>${product.model}</div>
+                            <div><strong>价格：</strong>¥${product.price.toFixed(2)}</div>
+                            <div><strong>材质：</strong>${product.material || '未填写'}</div>
+                            <div><strong>规格：</strong>${product.spec || '未填写'}</div>
+                        </div>
+                        ${noteHtml} <!-- 插入备注HTML -->
+                        <div class="product-actions">
+                            <button class="btn-secondary" onclick="editProduct('${product.id}')">编辑</button>
+                            <button class="btn-delete" onclick="deleteProduct('${product.id}')">删除</button>
+                        </div>
+                    </div>
+                `;
+            });
+
+            productList.innerHTML = html;
+        }
+
+        // 4. 编辑产品（新增填充备注）
+        function editProduct(id) {
+            const products = JSON.parse(localStorage.getItem('products')) || [];
+            const product = products.find(item => item.id === id);
+
+            if (!product) return;
+
+            // 填充表单（新增填充备注）
+            document.getElementById('productName').value = product.productName;
+            document.getElementById('model').value = product.model;
+            document.getElementById('price').value = product.price;
+            document.getElementById('material').value = product.material;
+            document.getElementById('spec').value = product.spec;
+            document.getElementById('note').value = product.note || ''; // 新增：填充备注
+
+            // 设置当前编辑ID
+            currentEditId = id;
+
+            // 修改按钮文字为"更新产品"
+            document.getElementById('saveBtn').textContent = '更新产品';
+
+            // 兼容微信浏览器的滚动逻辑
+            try {
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            } catch (e) {
+                window.scrollTo(0, 0);
+            }
+        }
+
+        // 5. 删除产品
+        function deleteProduct(id) {
+            if (!confirm('确定要删除该产品吗？删除后无法恢复！')) {
+                return;
+            }
+
+            let products = JSON.parse(localStorage.getItem('products')) || [];
+            products = products.filter(item => item.id !== id);
+
+            localStorage.setItem('products', JSON.stringify(products));
+            renderProductList();
+            alert('产品删除成功！');
+        }
+
+        // 6. 搜索产品（备注也参与搜索）
+        function searchProducts() {
+            const keyword = document.getElementById('searchInput').value.trim().toLowerCase();
+            const products = JSON.parse(localStorage.getItem('products')) || [];
+
+            if (!keyword) {
+                renderProductList();
+                return; 
+            }
+
+            // 模糊搜索：匹配名称、型号或备注
+            const filteredProducts = products.filter(product => 
+                product.productName.toLowerCase().includes(keyword) || 
+                product.model.toLowerCase().includes(keyword) ||
+                (product.note && product.note.toLowerCase().includes(keyword)) // 新增：备注搜索
+            );
+
+            renderProductList(filteredProducts);
+        }
+    </script>
+</body>
+</html>
