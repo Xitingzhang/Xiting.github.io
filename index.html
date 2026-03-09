@@ -83,6 +83,16 @@
             min-height: 100px;
         }
 
+        /* 表单即时验证样式 */
+        .form-group input:invalid:not(:placeholder-shown),
+        .form-group textarea:invalid:not(:placeholder-shown) {
+            border-color: #e74c3c;
+        }
+        .form-group input:valid:not(:placeholder-shown),
+        .form-group textarea:valid:not(:placeholder-shown) {
+            border-color: #2ecc71;
+        }
+
         /* 按钮样式 */
         .btn {
             background-color: #3498db;
@@ -98,6 +108,11 @@
 
         .btn:hover {
             background-color: #2980b9;
+        }
+
+        .btn:disabled {
+            background-color: #bdc3c7;
+            cursor: not-allowed;
         }
 
         .btn-danger {
@@ -174,60 +189,128 @@
                 margin-right: 0;
             }
             
-            /* 手机端表格优化 - 重点修改部分 */
-            table {
-                border: 0;
+            /* 小屏手机（<480px）竖排布局 */
+            @media (max-width: 480px) {
+                table {
+                    border: 0;
+                }
+                
+                table thead {
+                    display: none;
+                }
+                
+                table tr {
+                    display: block;
+                    margin-bottom: 15px;
+                    border: 1px solid #ddd;
+                    border-radius: 8px;
+                    overflow: hidden;
+                }
+                
+                table td {
+                    display: block;
+                    text-align: right;
+                    padding-left: 50%;
+                    position: relative;
+                    border-bottom: 1px solid #f5f5f5;
+                }
+                
+                table td:last-child {
+                    border-bottom: none;
+                }
+                
+                table td::before {
+                    content: attr(data-label);
+                    position: absolute;
+                    left: 0;
+                    width: 50%;
+                    padding-left: 15px;
+                    font-weight: 600;
+                    text-align: left;
+                    color: #3498db;
+                }
+                
+                /* 操作按钮横向排列 */
+                table td:last-child {
+                    display: flex;
+                    padding: 10px;
+                    justify-content: space-around;
+                }
+                
+                table td:last-child::before {
+                    display: none;
+                }
+                
+                table td .btn {
+                    width: 48%;
+                    margin: 0;
+                    font-size: 0.85rem;
+                    padding: 6px 8px;
+                }
             }
             
-            table thead {
-                display: none;
-            }
-            
-            table tr {
-                display: block;
-                margin-bottom: 15px;
-                border: 1px solid #ddd;
-                border-radius: 8px;
-                overflow: hidden;
-            }
-            
-            table td {
-                display: block;
-                text-align: right;
-                padding-left: 50%;
-                position: relative;
-                border-bottom: 1px solid #f5f5f5;
-            }
-            
-            table td:last-child {
-                border-bottom: none;
-            }
-            
-            table td::before {
-                content: attr(data-label);
-                position: absolute;
-                left: 0;
-                width: 50%;
-                padding-left: 15px;
-                font-weight: 600;
-                text-align: left;
-                color: #3498db;
-            }
-            
-            /* 操作按钮在手机端横向排列 */
-            table td:last-child {
-                display: flex;
-                padding: 10px;
-                justify-content: space-around;
-            }
-            
-            table td:last-child::before {
-                display: none;
-            }
-            
-            table td .btn {
-                width: 48%;
-                margin: 0;
+            /* 大屏手机（480px-768px）两列布局 */
+            @media (min-width: 480px) {
+                table thead {
+                    display: table-header-group;
+                }
+                
+                table tr {
+                    display: table-row;
+                    border: none;
+                    margin-bottom: 0;
+                    position: relative;
+                }
+                
+                table td {
+                    display: table-cell;
+                    text-align: left;
+                    padding: 8px 6px;
+                    border-bottom: 1px solid #ddd;
+                    padding-left: 8px;
+                }
+                
+                table th {
+                    padding: 10px 6px;
+                    font-size: 0.9rem;
+                }
+                
+                table td::before {
+                    display: none;
+                }
+                
+                /* 隐藏备注列，通过悬浮显示 */
+                table td:nth-child(6), table th:nth-child(6) {
+                    display: none;
+                }
+                
+                table td:last-child {
+                    min-width: 120px;
+                }
+                
+                /* 悬浮显示完整备注 */
+                table tr:hover::after {
+                    content: attr(data-notes);
+                    position: absolute;
+                    bottom: 100%;
+                    left: 50%;
+                    transform: translateX(-50%);
+                    background: #333;
+                    color: white;
+                    padding: 8px 12px;
+                    border-radius: 4px;
+                    font-size: 0.9rem;
+                    white-space: nowrap;
+                    z-index: 100;
+                    margin-bottom: 5px;
+                }
+                
+                table td .btn {
+                    width: 48%;
+                    margin: 0;
+                    font-size: 0.85rem;
+                    padding: 6px 8px;
+                }
             }
         }
     </style>
@@ -242,27 +325,27 @@
             <form id="productForm">
                 <div class="form-group">
                     <label for="productName">产品名称</label>
-                    <input type="text" id="productName" required>
+                    <input type="text" id="productName" required placeholder="请输入产品名称">
                 </div>
                 <div class="form-group">
                     <label for="productModel">产品型号</label>
-                    <input type="text" id="productModel" required>
+                    <input type="text" id="productModel" required placeholder="请输入产品型号">
                 </div>
                 <div class="form-group">
                     <label for="productPrice">产品价格</label>
-                    <input type="number" id="productPrice" step="0.01" required>
+                    <input type="number" id="productPrice" step="0.01" min="0" required placeholder="请输入产品价格">
                 </div>
                 <div class="form-group">
                     <label for="productMaterial">产品材质</label>
-                    <input type="text" id="productMaterial" required>
+                    <input type="text" id="productMaterial" required placeholder="请输入产品材质">
                 </div>
                 <div class="form-group">
                     <label for="productSpecs">产品规格</label>
-                    <input type="text" id="productSpecs" required>
+                    <input type="text" id="productSpecs" required placeholder="请输入产品规格">
                 </div>
                 <div class="form-group">
                     <label for="productNotes">产品备注</label>
-                    <textarea id="productNotes"></textarea>
+                    <textarea id="productNotes" placeholder="请输入产品备注（可选）"></textarea>
                 </div>
                 <button type="submit" class="btn">保存产品</button>
                 <button type="button" class="btn btn-danger" onclick="clearForm()">清空表单</button>
@@ -297,58 +380,110 @@
     </div>
 
     <script>
-        // 1. 预设默认产品数据（功能恢复）
-        let products = [
-            {
-                id: Date.now() - 3,
-                name: "小米13",
-                model: "MI13",
-                price: 3999,
-                material: "玻璃+金属",
-                specs: "6.36英寸，8GB+256GB",
-                notes: "2023年旗舰机型，徕卡影像"
-            },
-            {
-                id: Date.now() - 2,
-                name: "华为Mate 50",
-                model: "MATE50",
-                price: 4999,
-                material: "素皮+金属",
-                specs: "6.74英寸，8GB+256GB",
-                notes: "搭载骁龙8+ Gen1，可变光圈"
-            },
-            {
-                id: Date.now() - 1,
-                name: "iPhone 14",
-                model: "IP14",
-                price: 5999,
-                material: "玻璃+金属",
-                specs: "6.1英寸，6GB+128GB",
-                notes: "A15仿生芯片，卫星通信"
-            }
-        ];
+        // 全局状态管理
+        let products = [];
+        let editingProductId = null;
+        let isSubmitting = false;
 
-        // 2. 页面加载初始化（功能恢复）
+        // 防抖工具函数
+        function debounce(func, delay = 300) {
+            let timeoutId;
+            return function(...args) {
+                clearTimeout(timeoutId);
+                timeoutId = setTimeout(() => func.apply(this, args), delay);
+            };
+        }
+
+        // 页面加载初始化
         document.addEventListener('DOMContentLoaded', () => {
+            loadProductsFromLocalStorage();
             renderProducts();
             document.getElementById('productForm').addEventListener('submit', handleFormSubmit);
-            document.getElementById('searchInput').addEventListener('input', handleSearch);
+            document.getElementById('searchInput').addEventListener('input', debounce(handleSearch));
         });
 
-        // 3. 渲染产品列表（新增手机端自适应标签）
+        // 从本地存储加载数据
+        function loadProductsFromLocalStorage() {
+            try {
+                const savedProducts = localStorage.getItem('products');
+                if (savedProducts) {
+                    const parsed = JSON.parse(savedProducts);
+                    // 校验数据格式合法性
+                    if (Array.isArray(parsed) && parsed.every(p => typeof p === 'object' && p.id)) {
+                        products = parsed;
+                        return;
+                    }
+                }
+            } catch (e) {
+                console.error('加载本地数据失败:', e);
+            }
+            // 使用预设数据
+            products = [
+                {
+                    id: Date.now() - 3,
+                    name: "小米13",
+                    model: "MI13",
+                    price: 3999,
+                    material: "玻璃+金属",
+                    specs: "6.36英寸，8GB+256GB",
+                    notes: "2023年旗舰机型，徕卡影像"
+                },
+                {
+                    id: Date.now() - 2,
+                    name: "华为Mate 50",
+                    model: "MATE50",
+                    price: 4999,
+                    material: "素皮+金属",
+                    specs: "6.74英寸，8GB+256GB",
+                    notes: "搭载骁龙8+ Gen1，可变光圈"
+                },
+                {
+                    id: Date.now() - 1,
+                    name: "iPhone 14",
+                    model: "IP14",
+                    price: 5999,
+                    material: "玻璃+金属",
+                    specs: "6.1英寸，6GB+128GB",
+                    notes: "A15仿生芯片，卫星通信"
+                }
+            ];
+            saveProductsToLocalStorage();
+        }
+
+        // 保存数据到本地存储
+        function saveProductsToLocalStorage() {
+            try {
+                const totalSize = JSON.stringify(products).length;
+                const maxSize = 5 * 1024 * 1024; // 微信浏览器存储限制约5MB
+                const usedPercent = ((totalSize / maxSize) * 100).toFixed(2);
+                
+                // 容量预警
+                if (totalSize > maxSize * 0.8) {
+                    alert(`存储容量已使用${usedPercent}%，建议清理旧数据`);
+                }
+                
+                localStorage.setItem('products', JSON.stringify(products));
+            } catch (e) {
+                console.error('本地存储失败:', e);
+                alert('数据保存失败，请检查浏览器存储权限');
+            }
+        }
+
+        // 渲染产品列表
         function renderProducts(filteredProducts = products) {
             const tableBody = document.getElementById('productTableBody');
             tableBody.innerHTML = '';
             
             filteredProducts.forEach(product => {
                 const row = document.createElement('tr');
+                row.setAttribute('data-notes', product.notes || '暂无备注');
                 row.innerHTML = `
-                    <td data-label="产品名称">${product.name}</td>
-                    <td data-label="产品型号">${product.model}</td>
-                    <td data-label="产品价格">¥${product.price.toFixed(2)}</td>
-                    <td data-label="产品材质">${product.material}</td>
-                    <td data-label="产品规格">${product.specs}</td>
-                    <td data-label="产品备注">${product.notes || '-'}</td>
+                    <td data-label="产品名称">${product.name || '暂无'}</td>
+                    <td data-label="产品型号">${product.model || '暂无'}</td>
+                    <td data-label="产品价格">¥${product.price ? product.price.toFixed(2) : '暂无'}</td>
+                    <td data-label="产品材质">${product.material || '暂无'}</td>
+                    <td data-label="产品规格">${product.specs || '暂无'}</td>
+                    <td data-label="产品备注">${product.notes || '暂无'}</td>
                     <td data-label="操作">
                         <button class="btn btn-edit" onclick="editProduct(${product.id})">编辑</button>
                         <button class="btn btn-danger" onclick="deleteProduct(${product.id})">删除</button>
@@ -358,35 +493,68 @@
             });
         }
 
-        // 4. 保存产品功能（完全恢复）
+        // 处理表单提交
         function handleFormSubmit(e) {
             e.preventDefault();
+            if (isSubmitting) return;
+            
+            isSubmitting = true;
+            const submitBtn = document.querySelector('#productForm .btn[type="submit"]');
+            submitBtn.disabled = true;
             
             const productData = {
-                id: Date.now(),
-                name: document.getElementById('productName').value,
-                model: document.getElementById('productModel').value,
+                id: editingProductId || Date.now(),
+                name: document.getElementById('productName').value.trim(),
+                model: document.getElementById('productModel').value.trim(),
                 price: parseFloat(document.getElementById('productPrice').value),
-                material: document.getElementById('productMaterial').value,
-                specs: document.getElementById('productSpecs').value,
-                notes: document.getElementById('productNotes').value
+                material: document.getElementById('productMaterial').value.trim(),
+                specs: document.getElementById('productSpecs').value.trim(),
+                notes: document.getElementById('productNotes').value.trim()
             };
             
-            products.push(productData);
-            renderProducts();
-            clearForm();
-            alert('产品添加成功！');
+            try {
+                if (editingProductId) {
+                    // 编辑模式：更新现有产品
+                    const index = products.findIndex(p => p.id === editingProductId);
+                    if (index !== -1) {
+                        products[index] = productData;
+                        alert('产品修改成功！');
+                    }
+                    // 重置编辑状态
+                    editingProductId = null;
+                    submitBtn.textContent = '保存产品';
+                } else {
+                    // 新增模式：添加新产品
+                    products.push(productData);
+                    alert('产品添加成功！');
+                }
+                
+                saveProductsToLocalStorage();
+                renderProducts();
+                clearForm();
+            } catch (e) {
+                console.error('提交失败:', e);
+                alert('操作失败，请稍后重试');
+            } finally {
+                setTimeout(() => {
+                    isSubmitting = false;
+                    submitBtn.disabled = false;
+                }, 1000);
+            }
         }
 
-        // 5. 辅助功能（完全恢复）
+        // 辅助功能
         function clearForm() {
             document.getElementById('productForm').reset();
+            editingProductId = null;
+            document.querySelector('#productForm .btn[type="submit"]').textContent = '保存产品';
         }
 
         function editProduct(id) {
             const product = products.find(p => p.id === id);
             if (!product) return;
             
+            editingProductId = id;
             document.getElementById('productName').value = product.name;
             document.getElementById('productModel').value = product.model;
             document.getElementById('productPrice').value = product.price;
@@ -394,13 +562,15 @@
             document.getElementById('productSpecs').value = product.specs;
             document.getElementById('productNotes').value = product.notes;
             
-            products = products.filter(p => p.id !== id);
+            // 滚动到表单区域
             window.scrollTo({ top: 0, behavior: 'smooth' });
+            document.querySelector('#productForm .btn[type="submit"]').textContent = '保存修改';
         }
 
         function deleteProduct(id) {
             if (confirm('确定要删除这个产品吗？')) {
                 products = products.filter(p => p.id !== id);
+                saveProductsToLocalStorage();
                 renderProducts();
                 alert('产品删除成功！');
             }
